@@ -1,4 +1,4 @@
-package gallery.simple_code_editor;
+package gallery.code_editor;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
