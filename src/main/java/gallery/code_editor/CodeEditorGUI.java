@@ -16,17 +16,16 @@ import javafx.stage.Stage;
 import java.io.*;
 
 public class CodeEditorGUI extends Application {
+    private static final String FILE_TO_READ = "src/main/java/gallery/code_editor/CodeEditorGUI.java";
     private static final String FILE_NAME = "output.txt";
     @Override
     public void start(Stage stage) {
-        // Create a TextField
         TextField area = new TextField();
         area.setPromptText("Enter text");
         area.setPrefColumnCount(15);
         area.setPrefHeight(120);
         area.setPrefWidth(450);
 
-        // Create buttons
         Button undo = new Button("Undo");
         Button redo = new Button("Redo");
         Button braces = new Button("Check Braces");
@@ -34,13 +33,26 @@ public class CodeEditorGUI extends Application {
         Button save = new Button("Save");
         Button exit = new Button("Exit");
 
+        BraceChecker checker = new BraceChecker();
+
         Label savedText = new Label("Saved");
-        open.setOnAction(actionEvent -> {
+        braces.setOnAction(e -> {
+            try {
+                if (checker.checkBraces(FILE_TO_READ)) {
+                    savedText.setText("Braces are paired");
+                } else {
+                    savedText.setText("Braces are not paired");
+                }
+            } catch (IOException ex) {
+                savedText.setText("Error reading file: " + ex.getMessage());
+            }
+        });
+        open.setOnAction(e -> {
             String fileContent = readFile(FILE_NAME);
             showFile(fileContent);
         });
 
-        save.setOnAction(actionEvent -> {
+        save.setOnAction(e -> {
             String text = area.getText();
             savedText.setText("Saved changes: " + text);
             writeFile(FILE_NAME, text);
@@ -51,9 +63,8 @@ public class CodeEditorGUI extends Application {
             area.clear();
         });
 
-        exit.setOnAction(actionEvent -> stage.close());
+        exit.setOnAction(e -> stage.close());
 
-        // Create a GridPane for the buttons
         GridPane buttonGrid = new GridPane();
         buttonGrid.setHgap(10);
         buttonGrid.setVgap(10);
@@ -73,7 +84,6 @@ public class CodeEditorGUI extends Application {
         textBox.setPadding(new Insets(20, 50, 20, 50));
         textBox.getChildren().add(area);
 
-        // Create a VBox to hold both the text field and the button grid
         VBox layout = new VBox();
         layout.setSpacing(20);
         layout.setAlignment(Pos.CENTER);
@@ -85,7 +95,7 @@ public class CodeEditorGUI extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
+/**Logic to save file and display into scene**/
     public void writeFile(String filename, String content) {
         try (FileWriter write = new FileWriter(filename)) {
             write.write(content);
@@ -118,7 +128,7 @@ public class CodeEditorGUI extends Application {
         Stage newStage = new Stage();
         newStage.setTitle("Opened File");
 
-        exitTxt.setOnAction(actionEvent -> newStage.close());
+        exitTxt.setOnAction(e -> newStage.close());
 
         HBox savedBox = new HBox();
         savedBox.setSpacing(20);
