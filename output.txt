@@ -1,2 +1,3 @@
-sdfgs
-
+if (arr[i] == 5) {
+    list.add(arr[i]);
+}

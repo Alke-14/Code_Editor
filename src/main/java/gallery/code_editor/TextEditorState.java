@@ -18,25 +18,23 @@ public class TextEditorState {
         this.state = state;
     }
 
-    public void stringToChar(String s) {
-        for (char c : s.toCharArray()) {
-            state.push(c);
-        }
-    }
     public void input(TextArea area) {
-        area.setOnKeyPressed(e -> {
-            if (e.getCode().isLetterKey() || e.getCode().isDigitKey() || e.getCode() == KeyCode.SPACE) {
-                String text = area.getText();
-                if (!text.isEmpty()) {
-                    char lastAction = text.charAt(text.length() - 1);
-                    state.push(lastAction);
-                    System.out.println("Last Action Saved: " + lastAction);
-                }
+        area.setOnKeyTyped(e -> {
+            String input = e.getCharacter();
+
+            if (!input.isEmpty() && input.charAt(0) != '\b') {
+                char edit = input.charAt(0);
+                state.push(edit);
+                System.out.println("Action Added: " + edit);
+
             }
+        });
+
+        area.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.BACK_SPACE) {
                 if (!state.isEmpty()) {
-                    char removedChar = state.pop(); // Remove the last character from the stack
-                    System.out.println("Character removed: " + removedChar);
+                    char removedChar = state.pop();
+                    System.out.println("Action Removed: " + removedChar);
                 }
             }
         });
