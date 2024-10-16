@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -16,11 +15,11 @@ import javafx.stage.Stage;
 import java.io.*;
 
 public class CodeEditorGUI extends Application {
-    private static final String FILE_TO_READ = "src/main/java/gallery/code_editor/CodeEditorGUI.java";
+    private TextArea area;
     private static final String FILE_NAME = "output.txt";
     @Override
     public void start(Stage stage) {
-        TextField area = new TextField();
+        TextArea area = new TextArea();
         area.setPromptText("Enter text");
         area.setPrefColumnCount(15);
         area.setPrefHeight(120);
@@ -34,17 +33,19 @@ public class CodeEditorGUI extends Application {
         Button exit = new Button("Exit");
 
         BraceChecker checker = new BraceChecker();
+        TextEditorState state = new TextEditorState();
 
         Label savedText = new Label("Saved");
         braces.setOnAction(e -> {
+            String text = area.getText();
             try {
-                if (checker.checkBraces(FILE_TO_READ)) {
+                if (checker.checkBraces(text)) {
                     savedText.setText("Braces are paired");
                 } else {
                     savedText.setText("Braces are not paired");
                 }
             } catch (IOException ex) {
-                savedText.setText("Error reading file: " + ex.getMessage());
+                throw new RuntimeException(ex);
             }
         });
         open.setOnAction(e -> {
@@ -56,11 +57,11 @@ public class CodeEditorGUI extends Application {
             String text = area.getText();
             savedText.setText("Saved changes: " + text);
             writeFile(FILE_NAME, text);
-            for (int i = 1  ; i < text.length(); i++) {
+            for (int i = 0  ; i < text.length(); i++) {
                 char newState = text.charAt(i);
                 writeFile(FILE_NAME, text);
+                System.out.println("Saved in " + FILE_NAME + ": "+ newState);
             }
-            area.clear();
         });
 
         exit.setOnAction(e -> stage.close());
@@ -94,12 +95,17 @@ public class CodeEditorGUI extends Application {
         stage.setTitle("Text Editor");
         stage.setScene(scene);
         stage.show();
+
+        state.input(area);
+    }
+
+    public TextArea getTextArea() {
+        return area;
     }
 /**Logic to save file and display into scene**/
     public void writeFile(String filename, String content) {
         try (FileWriter write = new FileWriter(filename)) {
             write.write(content);
-            System.out.println("File saved: " + filename);
         } catch (IOException e) {
             System.err.println("Error writing to file " + e.getMessage());
         }
