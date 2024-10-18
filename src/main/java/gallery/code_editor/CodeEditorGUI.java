@@ -22,9 +22,12 @@ import java.io.*;
 public class CodeEditorGUI extends Application {
     private static final String FILE_TO_READ = "src/main/java/gallery/code_editor/CodeEditorGUI.java";
     private static final String FILE_NAME = "output.txt";
+
+
     @Override
     public void start(Stage stage) {
-        TextField area = new TextField();
+        TextArea area = new TextArea();
+        TextEditorState state = new TextEditorState(area);
         area.setPromptText("Enter text");
         area.setPrefColumnCount(15);
         area.setPrefHeight(120);
@@ -65,6 +68,10 @@ public class CodeEditorGUI extends Application {
                 writeFile(FILE_NAME, text);
             }
             area.clear();
+        });
+
+        undo.setOnAction(e -> {
+            state.undo();
         });
 
         exit.setOnAction(e -> stage.close());
