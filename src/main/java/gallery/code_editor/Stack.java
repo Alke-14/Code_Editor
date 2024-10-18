@@ -2,19 +2,19 @@ package gallery.code_editor;
 
 import java.util.EmptyStackException;
 
-public class BraceStack<T> implements StackInterface<T> {
+public class Stack<T> implements StackInterface<T> {
     private T[] stack;
     private int top;
     private static final int INITIAL_CAPACITY = 16;
 
     // Constructor with default capacity
-    public BraceStack() {
+    public Stack() {
         stack = (T[]) new Object[INITIAL_CAPACITY];
         top = -1;
     }
 
     // Constructor with custom capacity
-    public BraceStack(int capacity) {
+    public Stack(int capacity) {
         stack = (T[]) new Object[capacity];
         top = -1;
     }

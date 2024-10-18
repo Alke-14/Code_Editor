@@ -5,10 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class BraceChecker {
-    private BraceStack<Character> braceStack;
+    private Stack<Character> braceStack;
 
     public BraceChecker() {
-        this.braceStack = new BraceStack<>();
+        this.braceStack = new Stack<>();
     }
 
     public boolean isPaired(String code) {
@@ -35,14 +35,7 @@ public class BraceChecker {
         return braceStack.isEmpty();
     }
 
-    public boolean checkBraces(String filePath) throws IOException {
-        StringBuilder code = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                code.append(line).append("\n");
-            }
-        }
-        return isPaired(code.toString());
+    public boolean checkBraces(String code) throws IOException {
+        return isPaired(code);
     }
 }
