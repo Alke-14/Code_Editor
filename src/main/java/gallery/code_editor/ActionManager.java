@@ -26,18 +26,11 @@ public class ActionManager {
      * @return void
      */
     public void undoAction() {
-        System.out.println("undo stack b4: " + Arrays.toString(undo.toArray()));
         undoInProgress = true;
-
         if (!undo.isEmpty()) {
-            System.out.println("undo pressed: ");
             String poppedValue = undo.pop();
             redo.push(state.area.getText());
-            System.out.println("undo stack af: " + Arrays.toString(undo.toArray()));
-            System.out.println("UNDO redo stack: " + Arrays.toString(redo.toArray()));
             state.area.setText(poppedValue);
-        } else {
-            System.out.println("Stack empty.");
         }
         undoInProgress = false;
 
@@ -65,18 +58,12 @@ public class ActionManager {
      * @return void
      */
     public void redoAction() {
-        System.out.println("redo stack b4: " + Arrays.toString(redo.toArray()));
-
         undoInProgress = true;
         if (!redo.isEmpty()) {
             String poppedValue = redo.pop();
             undo.push(state.area.getText());
             state.area.setText(poppedValue);
-            System.out.println("redo stack af: " + Arrays.toString(redo.toArray()));
-        } else {
-            System.out.println("stack empty");
         }
         undoInProgress = false;
-
     }
 }
