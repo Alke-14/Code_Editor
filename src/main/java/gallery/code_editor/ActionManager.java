@@ -43,7 +43,7 @@ public class ActionManager {
      * @return void
      */
     public void batchUndoAction(int times) {
-        if (undo.isEmpty() || times == 0) {
+        if (times == 0) {
             return;
         }
         undoAction();
@@ -65,5 +65,19 @@ public class ActionManager {
             state.area.setText(poppedValue);
         }
         undoInProgress = false;
+    }
+
+    /**
+     * This method redoes the last 10 actions recursively in a given text area.
+     *
+     * @param times Number of times for function {@link #redoAction()} to execute
+     * @return void
+     */
+    public void batchRedoAction(int times) {
+        if (times == 0) {
+            return;
+        }
+        redoAction();
+        batchRedoAction(times - 1);
     }
 }

@@ -36,6 +36,7 @@ public class CodeEditorGUI extends Application {
         Button undo = new Button("Undo");
         Button batchUndo = new Button("Batch Undo");
         Button redo = new Button("Redo");
+        Button batchRedo = new Button("Batch Redo");
         Button braces = new Button("Check Braces");
         Button open = new Button("Open");
         Button save = new Button("Save");
@@ -51,6 +52,10 @@ public class CodeEditorGUI extends Application {
 
         batchUndo.setOnAction(e -> {
             state.actionManager.batchUndoAction(10);
+        });
+
+        batchRedo.setOnAction(e -> {
+            state.actionManager.batchRedoAction(10);
         });
 
         BraceChecker checker = new BraceChecker();
@@ -96,10 +101,11 @@ public class CodeEditorGUI extends Application {
         buttonGrid.add(undo, 0, 0);
         buttonGrid.add(batchUndo, 2, 0);
         buttonGrid.add(redo, 3, 0);
-        buttonGrid.add(braces, 4, 0);
-        buttonGrid.add(open, 5, 0);
-        buttonGrid.add(save, 6, 0);
-        buttonGrid.add(exit, 7, 0);
+        buttonGrid.add(batchRedo, 4, 0);
+        buttonGrid.add(braces, 5, 0);
+        buttonGrid.add(open, 6, 0);
+        buttonGrid.add(save, 7, 0);
+        buttonGrid.add(exit, 8, 0);
 
         // Create a HBox for the TextField
         HBox textBox = new HBox();

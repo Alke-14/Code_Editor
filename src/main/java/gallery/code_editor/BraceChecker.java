@@ -3,6 +3,7 @@ package gallery.code_editor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class BraceChecker {
     private Stack<Character> braceStack;
@@ -12,27 +13,52 @@ public class BraceChecker {
     }
 
     public boolean isPaired(String code) {
-        for (char c : code.toCharArray()) {
-            // Push opening braces onto the stack
-            if (c == '(' || c == '{' || c == '[') {
-                braceStack.push(c); // Push the opening brace onto the stack
-            }
-            // Handle closing braces
-            else if (c == ')' || c == '}' || c == ']') {
-                if (braceStack.isEmpty()) {
-                    return false;
-                }
-                char top = braceStack.pop();
+        braceStack.clear();
+        boolean isBalanced = true;
+        int index = -1;
 
-                // Check for matching pairs
-                if ((c == ')' && top != '(') ||
-                        (c == '}' && top != '{') ||
-                        (c == ']' && top != '[')) {
-                    return false;
+        for (char c : code.toCharArray()) {
+            index++;
+            if(isBalanced){
+                // Push opening braces onto the stack
+                if (c == '(' || c == '{' || c == '[') {
+                    braceStack.push(c); // Push the opening brace onto the stack
+                }
+                // Handle closing braces
+                else if (c == ')' || c == '}' || c == ']') {
+                    if (braceStack.isEmpty()) {
+                        isBalanced = false;
+                        break;
+                    } else {
+                        char top = braceStack.pop();
+                        isBalanced = isDelimPaired(top, c);
+                        if (!isDelimPaired(top, c)){
+                            break;
+                        }
+                    }
                 }
             }
+
         }
-        return braceStack.isEmpty();
+//        System.out.println(Arrays.toString(braceStack.toArray()));
+
+        if(!braceStack.isEmpty()){
+            isBalanced = false;
+        }
+        return isBalanced;
+    }
+
+    public boolean isDelimPaired(char openDelim, char closingDelim){
+        switch (openDelim) {
+            case '(':
+                return closingDelim == ')';
+            case '[':
+                return closingDelim == ']';
+            case '{':
+                return closingDelim == '}';
+            default:
+                return false;
+        }
     }
 
     public boolean checkBraces(String code) throws IOException {
