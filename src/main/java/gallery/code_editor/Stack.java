@@ -1,5 +1,6 @@
 package gallery.code_editor;
 
+import java.lang.reflect.Array;
 import java.util.EmptyStackException;
 
 public class Stack<T> implements StackInterface<T> {
@@ -21,6 +22,17 @@ public class Stack<T> implements StackInterface<T> {
 
     @Override
     public void push(T item) {
+        if(stack.length == 10) {
+            if (top == stack.length - 1) {
+                T[] newStack = (T[]) new Object[10];
+                System.arraycopy(stack, 1, newStack, 0, stack.length - 1);
+                newStack[9] = item;
+                stack = newStack;
+                return;
+            }
+            stack[++top] = item;
+            return;
+        }
         // Ensure there's space otherwise resize
         if (top == stack.length - 1) {
             resize(stack.length * 2);
@@ -38,9 +50,9 @@ public class Stack<T> implements StackInterface<T> {
         stack[top--] = null;
 
         // Resize down if needed
-        if (top > 0 && top == stack.length / 4) {
-            resize(stack.length / 2);
-        }
+//        if (top > 0 && top == stack.length / 4) {
+//            resize(stack.length / 2);
+//        }
         return item;
     }
 
@@ -68,5 +80,18 @@ public class Stack<T> implements StackInterface<T> {
         System.arraycopy(stack, 0, newStack, 0, top + 1);
         // Replace the old stack with the new one
         stack = newStack;
+    }
+
+    @Override
+    public T[] toArray() {
+        return stack;
+    }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i <= top; i++) {
+            stack[i] = null; // Clear each element
+        }
+        top = -1;
     }
 }
