@@ -20,8 +20,8 @@ import javafx.beans.value.ObservableValue;
 import java.io.*;
 
 public class CodeEditorGUI extends Application {
-    private static final String FILE_TO_READ = "src/main/java/gallery/code_editor/CodeEditorGUI.java";
     private static final String FILE_NAME = "output.txt";
+//    TextArea area = new TextArea();
 
 
     @Override
@@ -34,24 +34,38 @@ public class CodeEditorGUI extends Application {
         area.setPrefWidth(450);
 
         Button undo = new Button("Undo");
+        Button batchUndo = new Button("Batch Undo");
         Button redo = new Button("Redo");
         Button braces = new Button("Check Braces");
         Button open = new Button("Open");
         Button save = new Button("Save");
         Button exit = new Button("Exit");
 
+        undo.setOnAction(e -> {
+            state.actionManager.undoAction();
+        });
+
+        redo.setOnAction(e -> {
+            state.actionManager.redoAction();
+        });
+
+        batchUndo.setOnAction(e -> {
+            state.actionManager.batchUndoAction(10);
+        });
+
         BraceChecker checker = new BraceChecker();
 
         Label savedText = new Label("Saved");
         braces.setOnAction(e -> {
+            String text = area.getText();
             try {
-                if (checker.checkBraces(FILE_TO_READ)) {
+                if (checker.checkBraces(text)) {
                     savedText.setText("Braces are paired");
                 } else {
                     savedText.setText("Braces are not paired");
                 }
             } catch (IOException ex) {
-                savedText.setText("Error reading file: " + ex.getMessage());
+                throw new RuntimeException(ex);
             }
         });
         open.setOnAction(e -> {
@@ -63,16 +77,14 @@ public class CodeEditorGUI extends Application {
             String text = area.getText();
             savedText.setText("Saved changes: " + text);
             writeFile(FILE_NAME, text);
-            for (int i = 1  ; i < text.length(); i++) {
+            for (int i = 0; i < text.length(); i++) {
                 char newState = text.charAt(i);
                 writeFile(FILE_NAME, text);
+                System.out.println("Saved in " + FILE_NAME + ": " + newState);
             }
             area.clear();
         });
 
-        undo.setOnAction(e -> {
-            state.undo();
-        });
 
         exit.setOnAction(e -> stage.close());
 
@@ -82,11 +94,12 @@ public class CodeEditorGUI extends Application {
         buttonGrid.setAlignment(Pos.TOP_CENTER);
         buttonGrid.setPadding(new Insets(10));
         buttonGrid.add(undo, 0, 0);
-        buttonGrid.add(redo, 1, 0);
-        buttonGrid.add(braces, 2, 0);
-        buttonGrid.add(open, 3, 0);
-        buttonGrid.add(save, 4, 0);
-        buttonGrid.add(exit, 5, 0);
+        buttonGrid.add(batchUndo, 2, 0);
+        buttonGrid.add(redo, 3, 0);
+        buttonGrid.add(braces, 4, 0);
+        buttonGrid.add(open, 5, 0);
+        buttonGrid.add(save, 6, 0);
+        buttonGrid.add(exit, 7, 0);
 
         // Create a HBox for the TextField
         HBox textBox = new HBox();
@@ -98,7 +111,7 @@ public class CodeEditorGUI extends Application {
         VBox layout = new VBox();
         layout.setSpacing(20);
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(buttonGrid, textBox,savedText);
+        layout.getChildren().addAll(buttonGrid, textBox, savedText);
 
         // Create a scene with the combined layout
         Scene scene = new Scene(layout, 595, 395);
@@ -106,7 +119,10 @@ public class CodeEditorGUI extends Application {
         stage.setScene(scene);
         stage.show();
     }
-/**Logic to save file and display into scene**/
+
+    /**
+     * Logic to save file and display into scene
+     **/
     public void writeFile(String filename, String content) {
         try (FileWriter write = new FileWriter(filename)) {
             write.write(content);
@@ -129,7 +145,7 @@ public class CodeEditorGUI extends Application {
         return content.toString();
     }
 
-    private void showFile (String fileContent) {
+    private void showFile(String fileContent) {
         TextArea content = new TextArea(fileContent);
         content.setEditable(false);
 
@@ -148,7 +164,7 @@ public class CodeEditorGUI extends Application {
         savedBox.getChildren().add(exitTxt);
 
         VBox textBox = new VBox();
-        textBox.getChildren().addAll(content,savedBox);
+        textBox.getChildren().addAll(content, savedBox);
 
         Scene scene = new Scene(textBox, 400, 300);
         newStage.setScene(scene);
