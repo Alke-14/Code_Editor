@@ -87,7 +87,6 @@ public class CodeEditorGUI extends Application {
                 writeFile(FILE_NAME, text);
                 System.out.println("Saved in " + FILE_NAME + ": " + newState);
             }
-            area.clear();
         });
 
 
