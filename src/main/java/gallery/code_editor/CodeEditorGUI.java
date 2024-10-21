@@ -13,16 +13,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.beans.value.ObservableValue;
 
 
 import java.io.*;
+import java.util.Scanner;
 
 public class CodeEditorGUI extends Application {
     private static final String FILE_NAME = "output.txt";
-//    TextArea area = new TextArea();
-
 
     @Override
     public void start(Stage stage) {
@@ -74,22 +74,37 @@ public class CodeEditorGUI extends Application {
             }
         });
         open.setOnAction(e -> {
-            String fileContent = readFile(FILE_NAME);
-            showFile(fileContent);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Text File");
+            fileChooser.setInitialDirectory(new File("src\\main\\java\\gallery\\code_editor"));
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                System.out.println("File Opened");
+                try {
+                    Scanner scanner = new Scanner(selectedFile);
+                    String text = "";
+                    while(scanner.hasNextLine()){
+                        text += scanner.nextLine() + "\n";
+                    }
+                    area.setText(text);
+                    state.actionManager.undo.clear();
+                    state.actionManager.redo.clear();
+                }
+                catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
 
         save.setOnAction(e -> {
-            String text = area.getText();
-            savedText.setText("Saved changes: " + text);
-            writeFile(FILE_NAME, text);
-            for (int i = 0; i < text.length(); i++) {
-                char newState = text.charAt(i);
-                writeFile(FILE_NAME, text);
-                System.out.println("Saved in " + FILE_NAME + ": " + newState);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Text File");
+            fileChooser.setInitialDirectory(new File("src\\main\\java\\gallery\\code_editor"));
+            File file = fileChooser.showSaveDialog(new Stage());
+            if(file != null){
+                writeFile(file.getPath(), area.getText());
             }
-            area.clear();
         });
-
 
         exit.setOnAction(e -> stage.close());
 
@@ -136,47 +151,6 @@ public class CodeEditorGUI extends Application {
         } catch (IOException e) {
             System.err.println("Error writing to file " + e.getMessage());
         }
-    }
-
-    private String readFile(String fileName) {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        }
-        return content.toString();
-    }
-
-    private void showFile(String fileContent) {
-        TextArea content = new TextArea(fileContent);
-        content.setEditable(false);
-
-        Button exitTxt = new Button("Exit");
-
-
-        Stage newStage = new Stage();
-        newStage.setTitle("Opened File");
-
-        exitTxt.setOnAction(e -> newStage.close());
-
-        HBox savedBox = new HBox();
-        savedBox.setSpacing(20);
-        savedBox.setAlignment(Pos.BOTTOM_LEFT);
-        savedBox.setPadding(new Insets(20));
-        savedBox.getChildren().add(exitTxt);
-
-        VBox textBox = new VBox();
-        textBox.getChildren().addAll(content, savedBox);
-
-        Scene scene = new Scene(textBox, 400, 300);
-        newStage.setScene(scene);
-
-        newStage.show();
-
     }
 
     public static void main(String[] args) {
