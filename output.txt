@@ -1,1 +1,13 @@
-abcd
+Label savedText = new Label("Saved");
+        braces.setOnAction(e -> {
+            String text = area.getText();
+            try {
+                if (checker.checkBraces(text)) {
+                    savedText.setText("Braces are paired");
+                } else {
+                    savedText.setText("Braces are not paired");
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });

@@ -15,10 +15,8 @@ public class BraceChecker {
     public boolean isPaired(String code) {
         braceStack.clear();
         boolean isBalanced = true;
-        int index = -1;
 
         for (char c : code.toCharArray()) {
-            index++;
             if(isBalanced){
                 // Push opening braces onto the stack
                 if (c == '(' || c == '{' || c == '[') {
